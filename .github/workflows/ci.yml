@@ -1,9 +1,12 @@
 name: ci
 
+# Docs-only changes (README, LICENSE) dont change the build, so they dont run CI.
 on:
   push:
     branches: [main]
+    paths-ignore: ["**.md", "LICENSE"]
   pull_request:
+    paths-ignore: ["**.md", "LICENSE"]
 
 permissions:
   contents: read
