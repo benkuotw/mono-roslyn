@@ -4,6 +4,7 @@ name: ci
 on:
   push:
     branches: [main]
+    tags: ["v[0-9]*"]
     paths-ignore: ["**.md", "LICENSE"]
   pull_request:
     paths-ignore: ["**.md", "LICENSE"]
@@ -50,3 +51,22 @@ jobs:
           path: |
             out/DemoForm/DemoForm.exe
             out/DemoForm/DemoForm.exe.config
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      TAG: ${{ github.ref_name }}
+    steps:
+      - run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists; skipping."
+          else
+            gh release create "$TAG" --verify-tag --generate-notes
+          fi
