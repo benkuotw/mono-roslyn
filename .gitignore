@@ -1,0 +1,15 @@
+# Downloaded by setup.sh
+pkgs/
+
+# Build outputs
+out*/
+bin/
+obj/
+.vs/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# OS files
+.DS_Store

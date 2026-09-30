@@ -1,0 +1,6 @@
+pkgs/
+__pycache__/
+out*/
+examples/
+.git/
+.github/

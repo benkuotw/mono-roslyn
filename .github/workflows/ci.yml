@@ -1,0 +1,49 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-latest, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build the image
+        run: docker build -t mono-roslyn .
+
+      - name: Build the demo in the container
+        run: |
+          mkdir -p out
+          docker run --rm --network none -u "$(id -u):$(id -g)" \
+            -v "$PWD/examples/DemoForm:/src:ro" -v "$PWD/out:/out" \
+            mono-roslyn /src -o /out/DemoForm
+
+      - name: Check the build is deterministic
+        run: |
+          docker run --rm --network none -u "$(id -u):$(id -g)" \
+            -v "$PWD/examples/DemoForm:/src:ro" -v "$PWD/out:/out" \
+            mono-roslyn /src -o /out/again
+          cmp out/DemoForm/DemoForm.exe out/again/DemoForm.exe
+          sha256sum out/DemoForm/DemoForm.exe
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DemoForm-${{ runner.arch }}
+          path: |
+            out/DemoForm/DemoForm.exe
+            out/DemoForm/DemoForm.exe.config
