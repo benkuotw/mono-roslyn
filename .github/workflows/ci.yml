@@ -41,7 +41,7 @@ jobs:
           cmp out/DemoForm/DemoForm.exe out/again/DemoForm.exe
           sha256sum out/DemoForm/DemoForm.exe
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: DemoForm-${{ runner.arch }}
           path: |
