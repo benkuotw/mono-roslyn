@@ -8,7 +8,7 @@ Build .NET Framework WinForms projects on Linux, in a container: Microsoft's **R
 
 - **Compiling doesn't need Windows.** A compiler reads only the *metadata* in reference assemblies, and Microsoft publishes those on NuGet (`Microsoft.NETFramework.ReferenceAssemblies.net48`).
 - **Mono only runs the compiler.** Mono's JIT executes `csc.exe`, which is itself IL. The output is IL too. On Windows, the .NET Framework CLR loads Windows' own `System.Windows.Forms`, never Mono's.
-- **So the old problem was Mono's toolchain, not Linux.** Replace Mono's `mcs` with Roslyn, pass the switches MSBuild's `Csc` task would, and the Linux build behaves like a Visual Studio build.
+- **So the old problem was Mono's toolchain, not Linux.** Replace Mono's `mcs` with Roslyn and pass the same switches MSBuild's `Csc` task would, and the Linux build uses the same compiler and settings as a Visual Studio build.
 
 ## Quick start
 
@@ -25,6 +25,8 @@ docker run --rm --network none -u $(id -u):$(id -g) \
 - `--network none`: everything was downloaded when the image was built.
 - `:ro`: the project is mounted read-only; nothing is written next to your sources.
 - `-u $(id -u):$(id -g)`: output files are owned by you. Mount a directory that already exists: Docker creates a missing one as root.
+
+The `DemoForm.exe` artifacts from CI (built on amd64 and arm64 runners) have been run on Windows x64 and Windows arm64.
 
 ## Options
 
