@@ -1,6 +1,6 @@
 name: ci
 
-# Docs-only changes (README, LICENSE) dont change the build, so they dont run CI.
+# Docs-only changes (README, LICENSE) do not change the build, so they skip CI.
 on:
   push:
     branches: [main]
